@@ -1,7 +1,6 @@
 import torch
 import dataset
 import os
-import numpy as np
 import cv2
 import segmentation_models_pytorch as smp
 from matplotlib import pyplot as plt
@@ -39,6 +38,9 @@ def predict(path,res):
         classes=CLASSES,
     )
 
+    if not os.path.exists(os.path.join(path, 'masks')):
+        os.makedirs(os.path.join(path, 'masks'))
+
     for n in range((len(test_dataset))):
 
         image_vis = test_dataset_vis[n].astype('uint8')
@@ -53,11 +55,12 @@ def predict(path,res):
         mask_width, mask_height = pr_mask.shape
         cropped_mask = pr_mask[(mask_width-im_width)//2:(mask_width-im_width)//2+im_width, (mask_height-im_height)//2:(mask_height-im_height)//2+im_height]
         cropped_mask2 = cv2.resize(cropped_mask, (res[0], res[1]))
-        #cropped_mask2 = cv2.rotate(cropped_mask2, cv2.cv2.ROTATE_180)
         cv2.imwrite(os.path.join(path, 'masks frame-' + str(n).zfill(6) + '.color.jpg'), cropped_mask2 )
+
+        ''' visualization
         masked = np.ma.masked_where(cropped_mask == 0, cropped_mask)
-        print(n)
-        # plt.figure()
-        # plt.imshow(image_vis, 'gray', interpolation='none')
-        # plt.imshow(masked, 'ocean', interpolation='none', alpha=0.6)
-        # plt.show()
+        plt.figure()
+        plt.imshow(image_vis, 'gray', interpolation='none')
+        plt.imshow(masked, 'ocean', interpolation='none', alpha=0.6)
+        plt.show()
+        '''
