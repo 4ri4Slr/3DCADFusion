@@ -15,7 +15,7 @@ cd 3DCADFusion
 ```
 conda env create -f 3DCAD.yml
 ```
-3. Assuming the data files have been downloaded, the demo can be executed as follows: 
+3. Download the demo dataset and copy it to the `data/` directory. The demo can be executed as follows: 
 ```
 conda activate 3DCAD
 python run.py
