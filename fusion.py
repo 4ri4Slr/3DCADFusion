@@ -262,8 +262,6 @@ class TSDFVolume:
                   np.logical_and(pix_y < im_h,
                   pix_z > 0))))
       depth_val = np.zeros(pix_x.shape)
-      fx, fy = cam_intr[0, 0], cam_intr[1, 1]
-
       depth_val[valid_pix] = depth_im[pix_y[valid_pix], pix_x[valid_pix]]
 
       # Integrate TSDF
