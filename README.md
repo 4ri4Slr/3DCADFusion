@@ -31,3 +31,15 @@ conda activate 3DCAD
 python run.py
 ```
     
+## References
+
+```
+@inproceedings{zeng20163dmatch, 
+    title={3DMatch: Learning Local Geometric Descriptors from RGB-D Reconstructions}, 
+    author={Zeng, Andy and Song, Shuran and Nie{\ss}ner, Matthias and Fisher, Matthew and Xiao, Jianxiong and Funkhouser, Thomas}, 
+    booktitle={CVPR}, 
+    year={2017} 
+}
+
+
+```
