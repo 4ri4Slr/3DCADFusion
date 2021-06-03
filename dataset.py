@@ -63,7 +63,7 @@ class Dataset(BaseDataset):
 
         self.augmentation = augmentation
         self.preprocessing = preprocessing
-        self.mask = masks_dir
+        self.mask_dir = masks_dir
     def __getitem__(self, i):
 
         # read data
@@ -73,42 +73,35 @@ class Dataset(BaseDataset):
         lum =  + 0.2126 * image[:, :, 0] + 0.7152 * image[:, :, 1] + 0.0722 * image[:, :, 2]
         image = np.stack((lum,) * 3, axis=-1).astype('uint8')
 
-        if self.mask:
-            mask = cv2.imread(os.path.splitext(self.masks_fps[i])[0]+'.jpg',0)
+        if self.mask_dir:
+            mask = cv2.imread(os.path.splitext(self.masks_fps[i])[0]+'.png',0)
             mask[mask != 0] = 1
             masks = [(mask == v) for v in self.class_values]
             mask = np.stack(masks, axis=-1).astype('float')
 
-        # apply augmentations
-        if self.augmentation:
-            sample = self.augmentation(image=image)
-            image = sample['image']
+            sample = self.augmentation(image=image, mask=mask)
+            image, mask = sample['image'], sample['mask']
 
-            if self.mask:
-                sample  = self.augmentation(image = mask)
-                mask = sample['image']
+            sample = self.preprocessing(image=image, mask=mask)
+            image, mask = sample['image'], sample['mask']
 
-        # apply preprocessing
-        if self.preprocessing:
-            sample = self.preprocessing(image=image)
-            image = sample['image']
+            return image, mask
+        else:
 
-            if self.mask:
-                sample  = self.preprocessing(image = mask)
-                mask = sample['image']
+            if self.augmentation:
+                sample = self.augmentation(image=image)
+                image = sample['image']
 
-        if self.mask: return image, mask
-        else: return image
+            if self.preprocessing:
+
+                sample = self.preprocessing(image=image)
+                image = sample['image']
+
+            return image
+
 
     def __len__(self):
         return len(self.ids)
-
-
-#image, mask = dataset[4] # get some sample
-# visualize(
-#     image=image,
-#     gt_mask=mask.squeeze(),
-# )
 
 
 import albumentations as albu
