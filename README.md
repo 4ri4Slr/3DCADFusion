@@ -15,7 +15,10 @@ cd 3DCADFusion
 ```
 conda env create -f 3DCAD.yml
 ```
-3. Download the demo dataset and copy it to the `data/` directory.
+
+## Demo
+
+1. Download the demo dataset and copy it to the `data/` directory.
 
 ```
 mkdir data 
@@ -24,12 +27,18 @@ wget dataset-url
 cd ../..
 ```
 
+2. Download the pretrained model `best_model.pth`.
 
-4.    The demo can be executed as follows: 
+
+3. The demo can be executed as follows: 
 ```
 conda activate 3DCAD
 python run.py
 ```
+
+## Training 
+
+In order to retrain the hand segmentation network execute the `train.sh` wrapper. This will download the GTEA hand segmentation dataset and execute the trainer. 
     
 ## References
 
