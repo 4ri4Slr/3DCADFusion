@@ -3,15 +3,7 @@ import numpy as np
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import cv2
 import matplotlib.pyplot as plt
-DATA_DIR = '.'
 
-# load repo with data if it is not exists
-
-x_train_dir = os.path.join(DATA_DIR, 'Images')
-y_train_dir = os.path.join(DATA_DIR, 'Masks')
-
-x_valid_dir = os.path.join(DATA_DIR, 'val')
-y_valid_dir = os.path.join(DATA_DIR, 'valannot')
 
 def visualize(**images):
     """PLot images in one row."""
@@ -111,7 +103,7 @@ def get_training_augmentation():
     train_transform = [
 
         albu.HorizontalFlip(p=0.5),
-
+        albu.VerticalFlip(p = 0.5),
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
 
         albu.PadIfNeeded(min_height=320, min_width=320, always_apply=True, border_mode=0),
