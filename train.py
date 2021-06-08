@@ -68,7 +68,7 @@ for i in range(0, 60):
     # do something (save model, change lr, etc.)
     if max_score < train_logs['iou_score']:
         max_score = train_logs['iou_score']
-        torch.save(model, './best_model2.pth')
+        torch.save(model, './best_model.pth')
         print('Model saved!')
 
     if i == 25:
