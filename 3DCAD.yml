@@ -1,4 +1,4 @@
-name: pcl
+name: 3DCAD
 channels:
   - pytorch
   - open3d-admin
