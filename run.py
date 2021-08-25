@@ -8,7 +8,7 @@ import predict_mask
 if __name__ == "__main__":
 
 
-    path = './data/gripper'
+    path = './data'
     res = [1500, 1800]
     d_t = 0.93
 
