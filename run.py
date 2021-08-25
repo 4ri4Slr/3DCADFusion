@@ -17,7 +17,9 @@ if __name__ == "__main__":
 
     print("Estimating voxel volume bounds...")
     n_imgs = 100
-    cam_intr = np.loadtxt(path + "/camera-intrinsics.txt", delimiter=' ')
+    cam_intr = np.array([[6549.539, 0., 19],
+                             [0., 6548.102, 772],
+                             [0., 0., 1.]])
     vol_bnds = np.zeros((3, 2))
 
     # ======================================================================================================== #
