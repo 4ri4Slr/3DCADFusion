@@ -8,7 +8,7 @@ import predict_mask
 if __name__ == "__main__":
 
 
-    path = './data/gripper'
+    path = './data'
     res = [1500, 1800]
     d_t = 0.93
 
@@ -17,7 +17,9 @@ if __name__ == "__main__":
 
     print("Estimating voxel volume bounds...")
     n_imgs = 100
-    cam_intr = np.loadtxt(path + "/camera-intrinsics.txt", delimiter=' ')
+    cam_intr = np.array([[6549.539, 0., 19],
+                             [0., 6548.102, 772],
+                             [0., 0., 1.]])
     vol_bnds = np.zeros((3, 2))
 
     # ======================================================================================================== #
@@ -29,7 +31,7 @@ if __name__ == "__main__":
     print("Initializing voxel volume...")
     ref_pcl = utils.load_pcl(path, 0)
     ref_depth_im = utils.clean_depth(ref_pcl['pointcloud'][:, :, 2], ref_pcl['mask'], res, d_t)
-    cam_pose = np.loadtxt(path + "/frame-%05d.pose.txt" % 0)  # 4x4 rigid transformation matrix
+    cam_pose = np.eye(4)
 
     view_frust_pts = fusion.get_view_frustum(ref_pcl['pointcloud'][:, :, 2], cam_intr, cam_pose)
     vol_bnds[:, 0] = np.minimum(vol_bnds[:, 0], np.amin(view_frust_pts, axis=1))
