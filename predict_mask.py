@@ -4,6 +4,7 @@ import os
 import cv2
 import segmentation_models_pytorch as smp
 from matplotlib import pyplot as plt
+import numpy as np
 
 ENCODER = 'se_resnext50_32x4d'
 ENCODER_WEIGHTS = 'imagenet'
@@ -54,13 +55,14 @@ def predict(path,res):
         im_width, im_height = image_vis.shape[:2]
         mask_width, mask_height = pr_mask.shape
         cropped_mask = pr_mask[(mask_width-im_width)//2:(mask_width-im_width)//2+im_width, (mask_height-im_height)//2:(mask_height-im_height)//2+im_height]
-        cropped_mask2 = cv2.resize(cropped_mask, (res[0], res[1]))
-        cv2.imwrite(os.path.join(path, 'masks frame-' + str(n).zfill(6) + '.color.jpg'), cropped_mask2 )
+        cropped_mask2 = cv2.resize(cropped_mask, (res[1], res[0]))
+        cropped_mask2 = cv2.rotate(cropped_mask2, cv2.cv2.ROTATE_180)
+        cv2.imwrite(os.path.join(path, 'masks/frame-' + str(n).zfill(6) + '.color.jpg'), cropped_mask2 )
 
-        ''' visualization
-        masked = np.ma.masked_where(cropped_mask == 0, cropped_mask)
-        plt.figure()
-        plt.imshow(image_vis, 'gray', interpolation='none')
-        plt.imshow(masked, 'ocean', interpolation='none', alpha=0.6)
-        plt.show()
-        '''
+
+        # masked = np.ma.masked_where(cropped_mask == 0, cropped_mask)
+        # plt.figure()
+        # plt.imshow(image_vis, 'gray', interpolation='none')
+        # plt.imshow(masked, 'ocean', interpolation='none', alpha=0.6)
+        # plt.show()
+        #

@@ -45,7 +45,9 @@ class Dataset(BaseDataset):
             augmentation=None,
             preprocessing=None,
     ):
-        self.ids = os.listdir(images_dir)
+
+        self.ids = sorted(os.listdir(images_dir))
+        self.ids.sort(key=lambda x: int(os.path.splitext(x)[0]))
         self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.ids]
 
         if masks_dir:
@@ -61,8 +63,8 @@ class Dataset(BaseDataset):
         # read data
         image = cv2.imread(self.images_fps[i])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        #image = cv2.rotate(image, cv2.cv2.ROTATE_180)
-        lum =  + 0.2126 * image[:, :, 0] + 0.7152 * image[:, :, 1] + 0.0722 * image[:, :, 2]
+        image = cv2.rotate(image, cv2.cv2.ROTATE_180)
+        lum =  0.2126 * image[:, :, 0] + 0.7152 * image[:, :, 1] + 0.0722 * image[:, :, 2]
         image = np.stack((lum,) * 3, axis=-1).astype('uint8')
 
         if self.mask_dir:
@@ -145,7 +147,7 @@ def get_validation_augmentation():
     """Add paddings to make image shape divisible by 32"""
 
     h = 400
-    w = 600
+    w = 500
 
     test_transform = [
         #albu.CenterCrop(2000, 2500),
@@ -163,7 +165,7 @@ def get_visualization_augmentation():
     test_transform = [
 
         #albu.CenterCrop(2000, 2500),
-        albu.Resize(400, 600)
+        albu.Resize(400, 500)
     ]
     return albu.Compose(test_transform)
 

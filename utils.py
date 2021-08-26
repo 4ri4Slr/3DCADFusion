@@ -130,7 +130,7 @@ def register_icp(source,target, init, voxel_size):
 
 def load_pcl(path,i):
 
-    color_image = cv2.cvtColor(cv2.imread(path + "/rectified_rgb/image%05d.png" % (i + 1)), cv2.COLOR_BGR2RGB)
+    color_image = cv2.cvtColor(cv2.imread(path + "/rectified_rgb/%d.png" % (i)), cv2.COLOR_BGR2RGB)
     mask = cv2.imread(path + '/masks/frame-' + str(i).zfill(6) + '.color.jpg')
     xyz = np.load(path + '/xyz/%d.npy' % i)
     pcl = {"pointcloud":xyz, "color_image": color_image, "mask": mask}
@@ -139,13 +139,18 @@ def load_pcl(path,i):
 
 def crop_images(path, res):
 
-    ids = os.listdir(os.path.join(path,'rectified_rgb'))
-    images_fps = [os.path.join(path + '/rectified_rgb', image_id) for image_id in ids]
-    images_fps = sorted(images_fps)
-    for i in range(len(path)):
-        img = cv2.imread(images_fps[i])
-        img = crop_center(img, res[0], res[1])
-        cv2.imwrite(os.path.join(path, 'rectified_rgb/image' + str(i+1).zfill(5) + '.png'), img)
+    ids = os.listdir(path)
+    ids.sort(key=lambda x: int(os.path.splitext(x)[0]))
+    images_fps = [os.path.join(path, image_id) for image_id in ids]
+    for i, id in enumerate(ids):
+
+            img = cv2.imread(images_fps[i])
+
+            if img.shape[:2] == tuple(res):
+                continue
+
+            img = crop_center(img, res[0], res[1])
+            cv2.imwrite(os.path.join(path, '%d.png' %int(os.path.splitext(id)[0])), img)
 
 
 
@@ -157,19 +162,18 @@ def clean_depth(depth_im, mask, res, d):
 
     return depth_im
 
-def register_tsdf(verts, colors, pcl1, pcl2, cam_pose, res, d_t):
+def register_tsdf(verts,pcl1, pcl2, cam_pose, res, d_t):
 
 
     pcl1['pointcloud'] = crop_center(pcl1['pointcloud'], res[0], res[1])
-    pcd1 = remove_background(pcl1, d_max = 0.93)
+    pcd1 = remove_background(pcl1, d_max = d_t)
     pcl2['pointcloud'] = crop_center(pcl2['pointcloud'], res[0], res[1])
-    pcd2 = remove_background(pcl2, d_max = 0.93)
-    t_mat = register_icp(pcd1, pcd2, np.eye(4),0.002)
+    pcd2 = remove_background(pcl2, d_max = d_t)
+    t_mat = register_icp(pcd1, pcd2, np.eye(4),0.002*1.5)
     cam_pose = t_mat @ np.linalg.inv(cam_pose)
     pcl_global = o3d.geometry.PointCloud()
     pcl_global.points = o3d.utility.Vector3dVector(verts)
-    pcl_global.colors = o3d.utility.Vector3dVector(colors)
     pcl_global.estimate_normals()
     pose = register_icp(pcl_global, pcd2, cam_pose, 0.002)
-    #visualize(pcl_global)
+
     return pose
