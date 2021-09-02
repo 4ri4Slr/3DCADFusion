@@ -3,7 +3,7 @@ import open3d as o3d
 import os
 import copy
 import cv2
-
+import logging
 
 def crop_center(img,cropx,cropy):
 
@@ -35,16 +35,16 @@ def draw_registration_result(source, target, transformation):
 
 
 def preprocess_point_cloud(pcd, voxel_size):
-    print(":: Downsample with a voxel size %.3f." % voxel_size)
+    logging.info(":: Downsample with a voxel size %.3f." % voxel_size)
     pcd_down = pcd.voxel_down_sample(voxel_size)
 
     radius_normal = voxel_size * 2
-    print(":: Estimate normal with search radius %.3f." % radius_normal)
+    logging.info(":: Estimate normal with search radius %.3f." % radius_normal)
     pcd_down.estimate_normals(
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
 
     radius_feature = voxel_size * 5
-    print(":: Compute FPFH feature with search radius %.3f." % radius_feature)
+    logging.info(":: Compute FPFH feature with search radius %.3f." % radius_feature)
     pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
         pcd_down,
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
@@ -62,7 +62,7 @@ def execute_fast_global_registration(source,target, voxel_size):
 
     source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(source, target, voxel_size)
     distance_threshold = voxel_size * 0.5
-    print(":: Apply fast global registration with distance threshold %.3f" \
+    logging.info(":: Apply fast global registration with distance threshold %.3f" \
             % distance_threshold)
     result = o3d.pipelines.registration.registration_fast_based_on_feature_matching(
         source_down, target_down, source_fpfh, target_fpfh,
@@ -104,19 +104,19 @@ def register_icp(source,target, init, voxel_size):
     for scale in range(4):
         iter = max_iter[scale]
         radius = voxel_radius[scale]
-        print([iter, radius, scale])
+        logging.info([iter, radius, scale])
 
-        print("3-1. Downsample with a voxel size %.3f" % radius)
+        logging.info("3-1. Downsample with a voxel size %.3f" % radius)
         source_down = source.voxel_down_sample(radius)
         target_down = target.voxel_down_sample(radius)
 
-        print("3-2. Estimate normal.")
+        logging.info("3-2. Estimate normal.")
         source_down.estimate_normals(
             o3d.geometry.KDTreeSearchParamHybrid(radius=radius * 1, max_nn=30))
         target_down.estimate_normals(
             o3d.geometry.KDTreeSearchParamHybrid(radius=radius * 1, max_nn=30))
 
-        print("3-3. Applying icp point cloud registration")
+        logging.info("3-3. Applying icp point cloud registration")
         result_icp = o3d.pipelines.registration.registration_icp(
             source_down, target_down, radius, current_transformation,
             o3d.pipelines.registration.TransformationEstimationPointToPlane(),

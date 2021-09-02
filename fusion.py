@@ -1,5 +1,5 @@
 # Copyright (c) 2018 Andy Zeng
-
+import logging
 import numpy as np
 
 from numba import njit, prange
@@ -11,8 +11,8 @@ try:
   from pycuda.compiler import SourceModule
   FUSION_GPU_MODE = 1
 except Exception as err:
-  print('Warning: {}'.format(err))
-  print('Failed to import PyCUDA. Running fusion in CPU mode.')
+  logging.info('Warning: {}'.format(err))
+  logging.info('Failed to import PyCUDA. Running fusion in CPU mode.')
   FUSION_GPU_MODE = 0
 
 
@@ -41,7 +41,7 @@ class TSDFVolume:
     self._vol_bnds[:,1] = self._vol_bnds[:,0]+self._vol_dim*self._voxel_size
     self._vol_origin = self._vol_bnds[:,0].copy(order='C').astype(np.float32)
 
-    print("Voxel volume size: {} x {} x {} - # points: {:,}".format(
+    logging.info("Voxel volume size: {} x {} x {} - # points: {:,}".format(
       self._vol_dim[0], self._vol_dim[1], self._vol_dim[2],
       self._vol_dim[0]*self._vol_dim[1]*self._vol_dim[2])
     )
