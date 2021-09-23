@@ -44,7 +44,17 @@ python run.py
 
 ## Training 
 
-In order to retrain the hand segmentation network execute the `train.sh` wrapper. This will download the GTEA hand segmentation dataset and execute the trainer. 
+You can use the following script to download the GTEA hand segmentation dataset and train the hand segmentation network. 
+    
+```
+mkdir Training_Data
+
+wget https://www.dropbox.com/s/ysi2jv8qr9xvzli/hand14k.zip?dl=0
+unzip hand14k.zip?dl=0 -d Training_Data
+
+python train.py
+```
+
     
 ## References
 
