@@ -23,14 +23,20 @@ conda env create -f 3DCAD.yml
 ```
 mkdir data 
 cd data
-wget dataset-url
-cd ../..
+wget https://drive.google.com/file/d/1misOgyLk8Z_lpvU-wcvIskE-hcp1XSqs/view?usp=sharing
+tar -xf data.tar.gz
+rm data.tar.gz
+cd ..
 ```
 
 2. Download the pretrained model `best_model.pth`.
 
+```
+wget https://drive.google.com/file/d/1qF6BN9Sdrsarlu-Cj9Mv_eF4h3YSdvQ1/view?usp=sharing
+```
 
 3. The demo can be executed as follows: 
+
 ```
 conda activate 3DCAD
 python run.py
