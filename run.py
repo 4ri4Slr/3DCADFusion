@@ -5,10 +5,11 @@ import fusion
 import trimesh
 import predict_mask
 import os
+import logging
 
 if __name__ == "__main__":
 
-
+    logging.info("Cropping images...")
     path = './data'
     res = [1500, 1800]
     d_t = 0.93
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     utils.crop_images(os.path.join(path, 'rectified_rgb'), res)
     predict_mask.predict(path, res)
 
-    print("Estimating voxel volume bounds...")
+    logging.info("Estimating voxel volume bounds...")
     n_imgs = 100
     cam_intr = np.array([[6155.539, 0., 19],
                              [0., 6155.102, 772],
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     # Integrate
     # ======================================================================================================== #
     # Initialize voxel volume
-    print("Initializing voxel volume...")
+    logging.info("Initializing voxel volume...")
     ref_pcl = utils.load_pcl(path, 0)
     ref_depth_im = utils.clean_depth(ref_pcl['pointcloud'][:, :, 2], ref_pcl['mask'], res, d_t)
     cam_pose = np.eye(4)
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     # Loop through RGB-D images and fuse them together
     t0_elapse = time.time()
     for i in range(n_imgs-1):
-        print("Fusing frame %d/%d" % (i + 1, n_imgs))
+        logging.info("Fusing frame %d/%d" % (i + 1, n_imgs))
 
         # Read RGB-D image and camera pose
         pcl1 =utils.load_pcl(path,i)
@@ -61,10 +62,10 @@ if __name__ == "__main__":
         tsdf_vol.integrate(pcl2['color_image'], depth_im, cam_intr, cam_pose, obs_weight=1.)
 
     fps = n_imgs / (time.time() - t0_elapse)
-    print("Average FPS: {:.2f}".format(fps))
+    logging.info("Average FPS: {:.2f}".format(fps))
 
     # Get mesh from voxel volume and save to disk (can be viewed with Meshlab)
-    print("Saving mesh to mesh.ply...")
+    logging.info("Saving mesh to mesh.ply...")
     verts, faces, norms, colors = tsdf_vol.get_mesh()
     fusion.meshwrite("mesh.ply", verts, faces, norms, colors)
 
@@ -74,6 +75,6 @@ if __name__ == "__main__":
     refined_mesh = body_list[edge_size.index(max(edge_size))]
     refined_mesh.export('refined_mesh.ply')
     # Get point cloud from voxel volume and save to disk (can be viewed with Meshlab)
-    print("Saving point cloud to pc.ply...")
+    logging.info("Saving point cloud to pc.ply...")
     point_cloud = tsdf_vol.get_point_cloud()
     fusion.pcwrite("pc.ply", point_cloud)
